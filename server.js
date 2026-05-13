@@ -14,6 +14,12 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/settings", require("./routes/settingsRoutes"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/social-links", require("./routes/socialRoutes"));
+app.use("/api/team-categories", require("./routes/teamCategoryRoutes"));
+app.use("/api/team-members", require("./routes/teamMemberRoutes"));
+app.use(
+    "/api/team-member-links",
+    require("./routes/teamMemberLinkRoutes")
+);
 
 const PORT = process.env.PORT;
 
