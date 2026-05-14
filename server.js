@@ -20,6 +20,18 @@ app.use(
     "/api/team-member-links",
     require("./routes/teamMemberLinkRoutes")
 );
+app.use(
+    "/api/project-categories",
+    require("./routes/projectCategoryRoutes")
+);
+app.use("/api/projects", require("./routes/projectRoutes"));
+app.use("/api/project-links", require("./routes/projectLinkRoutes"));
+app.use("/api/project-media", require("./routes/projectMediaRoutes"));
+app.use("/api/partners", require("./routes/partnerRoutes"));
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/contact", require("./routes/contactRoutes"));
+app.use("/api/auditions", require("./routes/auditionRoutes"));
+app.use("/api/auditions", require("./routes/auditionApplyRoutes"));
 
 const PORT = process.env.PORT;
 

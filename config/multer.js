@@ -2,22 +2,26 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
+const folderMap = {
+    logo: "uploads/logos/",
+    image: "uploads/team/",
+    poster: "uploads/projects/",
+    media: "uploads/media/",
+    audition_poster: "uploads/auditions/"
+};
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
 
-        let uploadPath = "uploads/";
+        // Default upload folder
+        let uploadPath = "uploads/misc/";
 
-        // Settings logo upload
-        if (file.fieldname === "logo") {
-            uploadPath += "logos/";
+        // Match fieldname with folder
+        if (folderMap[file.fieldname]) {
+            uploadPath = folderMap[file.fieldname];
         }
 
-        // Team member image upload
-        else if (file.fieldname === "image") {
-            uploadPath += "team/";
-        }
-
-        // Create folder automatically if missing
+        // Create folder automatically
         fs.mkdirSync(uploadPath, { recursive: true });
 
         cb(null, uploadPath);
@@ -32,14 +36,17 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
+
+    // Allow images + videos
     if (
         file.mimetype === "image/png" ||
         file.mimetype === "image/jpeg" ||
-        file.mimetype === "image/jpg"
+        file.mimetype === "image/jpg" ||
+        file.mimetype.startsWith("video/")
     ) {
         cb(null, true);
     } else {
-        cb(new Error("Only images allowed"), false);
+        cb(new Error("Only image/video files allowed"), false);
     }
 };
 
