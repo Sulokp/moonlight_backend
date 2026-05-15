@@ -65,6 +65,48 @@ const addMember = (req, res) => {
         }
     );
 };
+const updateMember = (req, res) => {
+    const { id } = req.params;
+    const {
+        category_id,
+        name,
+        description
+    } = req.body;
+
+    const image = req.file
+        ? `/uploads/team/${req.file.filename}`
+        : null;
+
+    const sql = `
+        UPDATE team_members
+        SET
+            category_id = ?,
+            name = ?,
+            image = ?,
+            description = ?
+        WHERE id = ?
+    `;
+
+    db.query(
+        sql,
+        [
+            category_id,
+            name,
+            image,
+            description,
+            id
+        ],
+        (err) => {
+            if (err) {
+                return res.status(500).json(err);
+            }
+
+            res.json({
+                message: "Team member updated successfully"
+            });
+        }
+    );
+};
 
 // DELETE member
 const deleteMember = (req, res) => {
@@ -89,5 +131,6 @@ const deleteMember = (req, res) => {
 module.exports = {
     getMembers,
     addMember,
+    updateMember,
     deleteMember
 };

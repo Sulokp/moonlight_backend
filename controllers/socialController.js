@@ -46,4 +46,4 @@ module.exports = {
     getSocialLinks,
     addSocialLink,
     deleteSocialLink
-};
+};  

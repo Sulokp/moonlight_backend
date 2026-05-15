@@ -7,6 +7,7 @@ const upload = require("../config/multer");
 const {
     getMembers,
     addMember,
+    updateMember,
     deleteMember
 } = require("../controllers/teamMemberController");
 
@@ -18,9 +19,14 @@ router.post(
     "/",
     authMiddleware,
     upload.single("image"),
-    addMember
+    addMember,
 );
-
+router.put(
+    "/:id",
+    authMiddleware,
+    upload.single("image"),
+    updateMember
+);
 router.delete("/:id", authMiddleware, deleteMember);
 
 module.exports = router;
