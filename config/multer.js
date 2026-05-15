@@ -7,7 +7,8 @@ const folderMap = {
     image: "uploads/team/",
     poster: "uploads/projects/",
     media: "uploads/media/",
-    audition_poster: "uploads/auditions/"
+    audition_poster: "uploads/auditions/",
+    news_poster: "uploads/news/"
 };
 
 const storage = multer.diskStorage({

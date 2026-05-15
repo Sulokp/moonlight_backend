@@ -32,6 +32,7 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/contact", require("./routes/contactRoutes"));
 app.use("/api/auditions", require("./routes/auditionRoutes"));
 app.use("/api/auditions", require("./routes/auditionApplyRoutes"));
+app.use("/api/news-blogs", require("./routes/newsBlogRoutes"));
 
 const PORT = process.env.PORT;
 
