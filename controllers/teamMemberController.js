@@ -82,7 +82,7 @@ const updateMember = (req, res) => {
         SET
             category_id = ?,
             name = ?,
-            image = ?,
+            image = COALESCE(?, image),
             description = ?
         WHERE id = ?
     `;
