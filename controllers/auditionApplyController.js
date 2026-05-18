@@ -1,7 +1,6 @@
 const { sendAuditionEmail } = require("../services/emailService");
 
 const applyAudition = async (req, res) => {
-
     try {
         const {
             name,
@@ -39,21 +38,25 @@ const applyAudition = async (req, res) => {
             });
         }
 
-        await sendAuditionEmail({
+        // 🚀 SEND EMAIL IN BACKGROUND (NON-BLOCKING)
+        sendAuditionEmail({
             name,
             email,
             phone,
             location,
             description,
             attachments
+        }).catch((err) => {
+            console.error("❌ Email sending failed:", err.message);
         });
 
-        res.json({
+        // ⚡ RESPONSE IMMEDIATELY
+        return res.json({
             message: "Application submitted successfully"
         });
 
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: "Failed to submit application",
             error: err.message
         });

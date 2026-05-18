@@ -1,26 +1,17 @@
 const express = require("express");
-
 const router = express.Router();
+const upload = require("../config/multer");
+const controller = require("../controllers/projectMediaController");
 
-const {
-    getProjectMedia,
-    addProjectMedia,
-    deleteProjectMedia
-} = require("../controllers/projectMediaController");
+router.get("/:project_id", controller.getProjectMedia);
 
-const authMiddleware = require("../middleware/authMiddleware");
+// SINGLE IMAGE UPLOAD
+router.post(
+    "/",
+    upload.single("media"),
+    controller.addProjectMedia
+);
 
-
-// GET media of a project
-router.get("/:project_id", getProjectMedia);
-
-
-// ADD media
-router.post("/", authMiddleware, addProjectMedia);
-
-
-// DELETE media
-router.delete("/:id", authMiddleware, deleteProjectMedia);
-
+router.delete("/:id", controller.deleteProjectMedia);
 
 module.exports = router;

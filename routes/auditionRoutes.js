@@ -24,7 +24,7 @@ router.get("/", getAuditions);
 
 
 // UPDATE STATUS
-router.patch("/:id/status", updateStatus);
+router.put("/:id/status", updateStatus);
 
 
 // DELETE AUDITION

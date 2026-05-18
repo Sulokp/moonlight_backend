@@ -14,6 +14,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const upload = require("../config/multer");
 
 
+
 // PUBLIC
 router.get("/", getPartners);
 

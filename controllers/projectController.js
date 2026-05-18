@@ -1,7 +1,4 @@
 const db = require("../config/db");
-
-
-// Generate slug from title
 const generateSlug = (title) => {
     return title
         .toLowerCase()
@@ -10,8 +7,11 @@ const generateSlug = (title) => {
         .replace(/[^\w\-]+/g, "");
 };
 
+const makeUniqueSlug = (slug) => {
+    return `${slug}-${Date.now()}`;
+};
 
-// GET all projects
+// GET ALL PROJECTS
 const getProjects = (req, res) => {
 
     const sql = `
@@ -27,18 +27,21 @@ const getProjects = (req, res) => {
     db.query(sql, (err, result) => {
 
         if (err) {
-            return res.status(500).json(err);
+            console.log(err);
+            return res.status(500).json({
+                success: false,
+                message: err.message
+            });
         }
 
         res.json({
-            message: "Projects fetched successfully",
+            success: true,
             data: result
         });
     });
 };
 
 
-// CREATE project
 const createProject = (req, res) => {
 
     const {
@@ -53,11 +56,21 @@ const createProject = (req, res) => {
         featured
     } = req.body;
 
-    // Generate slug automatically
-    const slug = generateSlug(title);
+    // ✅ SAFE VALIDATION
+    if (!title || !category_id) {
+        return res.status(400).json({
+            success: false,
+            message: "Title and category are required"
+        });
+    }
 
-    // Poster upload
-    const poster = req.file
+    // ✅ SAFE SLUG
+    const slug = title
+        ? title.toLowerCase().trim().replace(/\s+/g, "-")
+        : "";
+
+    // ✅ SAFE FILE
+    const poster = req.file?.filename
         ? `/uploads/projects/${req.file.filename}`
         : null;
 
@@ -78,35 +91,37 @@ const createProject = (req, res) => {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    db.query(
-        sql,
-        [
-            category_id,
-            title,
-            slug,
-            poster,
-            description,
-            duration,
-            seasons || null,
-            episodes || null,
-            release_year || null,
-            status,
-            featured || false
-        ],
-        (err, result) => {
+    db.query(sql, [
+        category_id,
+        title,
+        slug,
+        poster,
+        description || null,
+        duration || null,
+        seasons ? Number(seasons) : null,
+        episodes ? Number(episodes) : null,
+        release_year ? Number(release_year) : null,
+        status || "upcoming",
+        featured === "true" || featured === true ? 1 : 0
+    ], (err, result) => {
 
-            if (err) {
-                return res.status(500).json(err);
-            }
-
-            res.json({
-                message: "Project created successfully",
-                insertedId: result.insertId
+        if (err) {
+            console.log("MYSQL ERROR:", err); // 🔥 IMPORTANT
+            return res.status(500).json({
+                success: false,
+                message: err.message
             });
         }
-    );
+
+        res.status(201).json({
+            success: true,
+            message: "Project created successfully",
+            insertedId: result.insertId
+        });
+    });
 };
 
+// UPDATE PROJECT (FIXED)
 const updateProject = (req, res) => {
 
     const { id } = req.params;
@@ -123,10 +138,15 @@ const updateProject = (req, res) => {
         featured
     } = req.body;
 
-    // regenerate slug if title changes
+    if (!title) {
+        return res.status(400).json({
+            success: false,
+            message: "Title is required"
+        });
+    }
+
     const slug = generateSlug(title);
 
-    // new poster if uploaded
     const poster = req.file
         ? `/uploads/projects/${req.file.filename}`
         : null;
@@ -148,60 +168,66 @@ const updateProject = (req, res) => {
         WHERE id = ?
     `;
 
+    db.query(sql, [
+        category_id,
+        title,
+        slug,
+        poster,
+        description,
+        duration,
+        seasons ? Number(seasons) : null,
+        episodes ? Number(episodes) : null,
+        release_year ? Number(release_year) : null,
+        status,
+        featured === "true" || featured === true ? 1 : 0,
+        id
+    ], (err, result) => {
+
+        if (err) {
+            console.log(err);
+            return res.status(500).json({
+                success: false,
+                message: err.message
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Project updated successfully"
+        });
+    });
+};
+
+
+// DELETE PROJECT
+const deleteProject = (req, res) => {
+
+    const { id } = req.params;
+
     db.query(
-        sql,
-        [
-            category_id,
-            title,
-            slug,
-            poster,
-            description,
-            duration,
-            seasons || null,
-            episodes || null,
-            release_year || null,
-            status,
-            featured || false,
-            id
-        ],
-        (err, result) => {
+        `DELETE FROM projects WHERE id = ?`,
+        [id],
+        (err) => {
 
             if (err) {
-                return res.status(500).json(err);
+                console.log(err);
+                return res.status(500).json({
+                    success: false,
+                    message: err.message
+                });
             }
 
             res.json({
-                message: "Project updated successfully"
+                success: true,
+                message: "Project deleted successfully"
             });
         }
     );
 };
 
-// DELETE project
-const deleteProject = (req, res) => {
-
-    const { id } = req.params;
-
-    const sql = `
-        DELETE FROM projects
-        WHERE id = ?
-    `;
-
-    db.query(sql, [id], (err, result) => {
-
-        if (err) {
-            return res.status(500).json(err);
-        }
-
-        res.json({
-            message: "Project deleted successfully"
-        });
-    });
-};
-
 module.exports = {
     getProjects,
     createProject,
-    deleteProject,
-    updateProject
+    updateProject,
+    deleteProject
 };

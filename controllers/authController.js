@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const db = require("../config/db");
-const sendResetEmail = require("../services/emailService");
+const { sendResetEmail } = require("../services/emailService");
 
 
 // ==============================

@@ -1,7 +1,7 @@
 const db = require("../config/db");
 
 
-// GET media for a project
+// GET images for a project
 const getProjectMedia = (req, res) => {
 
     const { project_id } = req.params;
@@ -20,36 +20,39 @@ const getProjectMedia = (req, res) => {
         }
 
         res.json({
-            message: "Project media fetched successfully",
+            message: "Project images fetched successfully",
             data: result
         });
     });
 };
 
 
-// ADD media
+// ADD image (WITH MULTER)
 const addProjectMedia = (req, res) => {
 
-    const {
-        project_id,
-        type,
-        media_url,
-        title
-    } = req.body;
+    const { project_id, title } = req.body;
+
+    if (!req.file) {
+        return res.status(400).json({
+            message: "Image file is required"
+        });
+    }
+
+    // store relative path
+    const image_path = req.file.path.replace(/\\/g, "/");
 
     const sql = `
         INSERT INTO project_media (
             project_id,
-            type,
-            media_url,
+            image_path,
             title
         )
-        VALUES (?, ?, ?, ?)
+        VALUES (?, ?, ?)
     `;
 
     db.query(
         sql,
-        [project_id, type, media_url, title],
+        [project_id, image_path, title],
         (err, result) => {
 
             if (err) {
@@ -57,15 +60,16 @@ const addProjectMedia = (req, res) => {
             }
 
             res.json({
-                message: "Media added successfully",
-                insertedId: result.insertId
+                message: "Image uploaded successfully",
+                insertedId: result.insertId,
+                image_path
             });
         }
     );
 };
 
 
-// DELETE media
+// DELETE image
 const deleteProjectMedia = (req, res) => {
 
     const { id } = req.params;
@@ -82,7 +86,7 @@ const deleteProjectMedia = (req, res) => {
         }
 
         res.json({
-            message: "Media deleted successfully"
+            message: "Image deleted successfully"
         });
     });
 };

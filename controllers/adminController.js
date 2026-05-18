@@ -29,10 +29,13 @@ const loginAdmin = (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: admin.id, email: admin.email },
+            { id: admin.id, 
+            email: admin.email },
+            
             process.env.JWT_SECRET,
             { expiresIn: "1d" }
         );
+        
 
         res.json({
             message: "Login successful",

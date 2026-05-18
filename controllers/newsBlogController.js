@@ -72,7 +72,6 @@ const createNewsBlog = (req, res) => {
 
 // UPDATE NEWS/BLOG
 const updateNewsBlog = (req, res) => {
-
     const { id } = req.params;
 
     const {
@@ -81,48 +80,42 @@ const updateNewsBlog = (req, res) => {
         news_link
     } = req.body;
 
-    let sql = `
+    let news_poster = null;
+
+    if (req.file) {
+        news_poster = `/uploads/news/${req.file.filename}`;
+    }
+
+    const sql = `
         UPDATE news_blogs
         SET
+            news_poster = COALESCE(?, news_poster),
             title = ?,
             description = ?,
             news_link = ?
+        WHERE id = ?
     `;
 
-    const values = [
-        title,
-        description,
-        news_link
-    ];
+    db.query(
+        sql,
+        [
+            news_poster,
+            title,
+            description,
+            news_link,
+            id
+        ],
+        (err, result) => {
+            if (err) {
+                return res.status(500).json(err);
+            }
 
-    // If new image uploaded
-    if (req.file) {
-
-        sql += `,
-            news_poster = ?
-        `;
-
-        values.push(
-            `/uploads/news/${req.file.filename}`
-        );
-    }
-
-    sql += ` WHERE id = ?`;
-
-    values.push(id);
-
-    db.query(sql, values, (err, result) => {
-
-        if (err) {
-            return res.status(500).json(err);
+            res.json({
+                message: "News/Blog updated successfully"
+            });
         }
-
-        res.json({
-            message: "News/Blog updated successfully"
-        });
-    });
+    );
 };
-
 
 // DELETE NEWS/BLOG
 const deleteNewsBlog = (req, res) => {

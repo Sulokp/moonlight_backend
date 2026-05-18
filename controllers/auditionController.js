@@ -55,6 +55,9 @@ const getAuditions = (req, res) => {
 // UPDATE STATUS
 const updateStatus = (req, res) => {
 
+    console.log("PARAMS:", req.params);
+    console.log("BODY:", req.body);
+
     const { id } = req.params;
     const { status } = req.body;
 
@@ -67,15 +70,19 @@ const updateStatus = (req, res) => {
     db.query(sql, [status, id], (err, result) => {
 
         if (err) {
+
+            console.log("SQL ERROR:", err);
+
             return res.status(500).json(err);
         }
+
+        console.log("RESULT:", result);
 
         res.json({
             message: "Status updated successfully"
         });
     });
 };
-
 
 // DELETE AUDITION
 const deleteAudition = (req, res) => {
