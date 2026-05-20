@@ -65,6 +65,7 @@ const sendAuditionEmail = async (data) => {
 
     const {
         name,
+        age,
         email,
         phone,
         location,
@@ -82,6 +83,7 @@ const sendAuditionEmail = async (data) => {
             <h2>New Audition Application</h2>
 
             <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Age:</strong> ${age}</p>
             <p><strong>Email:</strong> ${email}</p>
             <p><strong>Phone:</strong> ${phone}</p>
             <p><strong>Location:</strong> ${location}</p>
